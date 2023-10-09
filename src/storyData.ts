@@ -56,8 +56,8 @@ export const preparingHomePrompt: Prompt = {
 const takingShelterPrompt: Prompt = {
     question: "The warning sirens are blaring. Where is the safest place to take shelter in your home?",
     answers: [
-        { text: "In the southwest corner of your basement." },
-        { text: "In a hallway without windows." },//correct answer
+        { text: "In the southwest corner of your basement." },//correct answer
+        { text: "In a hallway with windows." },
         { text: "In your upstairs bedroom." }
     ]
 };
@@ -65,9 +65,9 @@ const takingShelterPrompt: Prompt = {
 const protectingYourselfPrompt: Prompt = {
     question: "You're in the basement, and you can hear the tornado approaching. What should you do to protect yourself?",
     answers: [
-        { text: "Stand near a window to watch the tornado's path." },
+        { text: "Stand near a window to watch the tornado's path."},
         { text: "Get under something sturdy like a workbench or stairs and protect your head and neck." },//correct answer
-        { text: "Sit down in the center of the room." }
+        { text: "Scream and run outside!!!" }
     ]
 };
 
@@ -84,7 +84,7 @@ const helpingNeighborsPrompt: Prompt = {
     question: "Your neighbors' house has been severely damaged, and they need assistance. What should you do first?",
     answers: [
         { text: "Head over immediately to offer help." },
-        { text: "Ensure it's safe outside and take an emergency kit with you." }, //correct answer
+        { text: "Ensure it's safe outside and take an emergency kit with you."}, //correct answer
         { text: "Wait for professional help to arrive." }
     ]
 };
@@ -100,11 +100,18 @@ const gameOverPrompt: Prompt = {
 
 // Feedback prompts for wrong answers
 
+const Congrats: Prompt = {
+    question: "Awesome job!",
+    answers: [
+        { text: "End Game", nextPrompt: gameOverPrompt  }
+    ]
+};
+
 const feedbackEarlyWarningIgnore: Prompt = {
     question: "Yikes! Ignoring Mother Nature's mood swings isn't always the best idea. Feel like playing it safer this time?",
     answers: [
         { text: "Yes, let's be friends with the weather.", nextPrompt: earlyWarningPrompt },
-        { text: "No, I dance in the face of danger." }
+        { text: "No, I dance in the face of danger.", nextPrompt: gameOverPrompt  }
     ]
 };
 
@@ -112,7 +119,7 @@ const feedbackPreparingHomeOpenWindows: Prompt = {
     question: "Ah, the old 'open the windows' trick. Contrary to grandma's tales, it doesn't really help against tornadoes. Try again?",
     answers: [
         { text: "Sure, grandma won't mind.", nextPrompt: preparingHomePrompt },
-        { text: "No, I stand by grandma's wisdom." }
+        { text: "No, I stand by grandma's wisdom.", nextPrompt: gameOverPrompt  }
     ]
 };
 
@@ -120,7 +127,7 @@ const feedbackPreparingHomeCleaning: Prompt = {
     question: "You thought it was a good time for spring cleaning, but the tornado had other plans. Maybe re-think your priorities? 🌪️🍃",
     answers: [
         { text: "Right! Let's tidy up later.", nextPrompt: preparingHomePrompt },
-        { text: "I've got a clean yard. I win!" }
+        { text: "I've got a clean yard. I win!", nextPrompt: gameOverPrompt  }
     ]
 };
 
@@ -147,9 +154,21 @@ preparingHomePrompt.answers[0].nextPrompt = feedbackPreparingHomeOpenWindows;
 preparingHomePrompt.answers[1].nextPrompt = takingShelterPrompt;
 preparingHomePrompt.answers[2].nextPrompt = feedbackPreparingHomeCleaning;
 
-takingShelterPrompt.answers.forEach(answer => answer.nextPrompt = protectingYourselfPrompt);
-protectingYourselfPrompt.answers.forEach(answer => answer.nextPrompt = postTornadoPrompt);
-postTornadoPrompt.answers.forEach(answer => answer.nextPrompt = helpingNeighborsPrompt);
+protectingYourselfPrompt.answers[0].nextPrompt = sweptAwayByTornado;
+protectingYourselfPrompt.answers[1].nextPrompt = postTornadoPrompt;
+protectingYourselfPrompt.answers[2].nextPrompt = sweptAwayByTornado;
+
+takingShelterPrompt.answers[0].nextPrompt = protectingYourselfPrompt;
+takingShelterPrompt.answers[1].nextPrompt = feedbackPreparingHomeOpenWindows;
+takingShelterPrompt.answers[2].nextPrompt = sweptAwayByTornado;
+
+postTornadoPrompt.answers[0].nextPrompt = sweptAwayByTornado;
+postTornadoPrompt.answers[1].nextPrompt = helpingNeighborsPrompt;
+postTornadoPrompt.answers[2].nextPrompt = helpingNeighborsPrompt;
+
+helpingNeighborsPrompt.answers[0].nextPrompt = gameOverPrompt;
+helpingNeighborsPrompt.answers[1].nextPrompt = Congrats;
+helpingNeighborsPrompt.answers[2].nextPrompt = gameOverPrompt;
 
 export const initialPrompts: Prompt[] = [welcomeToTwistervillePrompt];
 
