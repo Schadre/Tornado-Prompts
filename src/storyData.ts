@@ -30,16 +30,13 @@ const tornadoWatchPrompt: Prompt = {
     question: "You hear on the radio that a tornado watch has been issued for your area. This means:",
     answers: [
         { 
-            text: "A tornado has been spotted, and you should take cover immediately.", 
-            feedback: "That's not correct. A tornado watch means that conditions are right for a tornado, but one hasn't been spotted yet."
+            text: "A tornado has been spotted, and you should run to it immediately.", 
         },
         { 
             text: "Conditions are right for a tornado, but one hasn't been spotted yet.", //correct answer
-            feedback: "Correct! A tornado watch means that conditions are right for a tornado, but one hasn't been spotted yet."
         },
         { 
-            text: "There's a slight possibility of a tornado today.", 
-            feedback: "That's not correct. A tornado watch means that conditions are right for a tornado, but one hasn't been spotted yet."
+            text: "There's a slight possibility of a hurricane today."
         }
     ]
 };
@@ -75,7 +72,6 @@ const postTornadoPrompt: Prompt = {
     question: "The tornado has passed, but you're unsure of the situation outside. What's the safest thing to do next?",
     answers: [
         { text: "Go outside immediately to check the damage." },
-        { text: "Wait a few minutes and then leave the basement." },
         { text: "Listen to the radio or your emergency weather app for updates before deciding." }//correct answer
     ]
 };
@@ -83,9 +79,9 @@ const postTornadoPrompt: Prompt = {
 const helpingNeighborsPrompt: Prompt = {
     question: "Your neighbors' house has been severely damaged, and they need assistance. What should you do first?",
     answers: [
-        { text: "Head over immediately to offer help." },
+        { text: "Stare off into the distance and daydream" },
         { text: "Ensure it's safe outside and take an emergency kit with you."}, //correct answer
-        { text: "Wait for professional help to arrive." }
+        { text: "Chase the tornado!" }
     ]
 };
 
@@ -110,7 +106,7 @@ const Congrats: Prompt = {
 const feedbackEarlyWarningIgnore: Prompt = {
     question: "Yikes! Ignoring Mother Nature's mood swings isn't always the best idea. Feel like playing it safer this time?",
     answers: [
-        { text: "Yes, let's be friends with the weather.", nextPrompt: earlyWarningPrompt },
+        { text: "Yes, let's be friends with the weather.", nextPrompt: welcomeToTwistervillePrompt },
         { text: "No, I dance in the face of danger.", nextPrompt: gameOverPrompt  }
     ]
 };
@@ -118,7 +114,7 @@ const feedbackEarlyWarningIgnore: Prompt = {
 const feedbackPreparingHomeOpenWindows: Prompt = {
     question: "Ah, the old 'open the windows' trick. Contrary to grandma's tales, it doesn't really help against tornadoes. Try again?",
     answers: [
-        { text: "Sure, grandma won't mind.", nextPrompt: preparingHomePrompt },
+        { text: "Sure, grandma won't mind.", nextPrompt: welcomeToTwistervillePrompt },
         { text: "No, I stand by grandma's wisdom.", nextPrompt: gameOverPrompt  }
     ]
 };
@@ -126,7 +122,7 @@ const feedbackPreparingHomeOpenWindows: Prompt = {
 const feedbackPreparingHomeCleaning: Prompt = {
     question: "You thought it was a good time for spring cleaning, but the tornado had other plans. Maybe re-think your priorities? 🌪️🍃",
     answers: [
-        { text: "Right! Let's tidy up later.", nextPrompt: preparingHomePrompt },
+        { text: "Right! Let's tidy up later.", nextPrompt: welcomeToTwistervillePrompt },
         { text: "I've got a clean yard. I win!", nextPrompt: gameOverPrompt  }
     ]
 };
@@ -139,6 +135,22 @@ const sweptAwayByTornado: Prompt = {
     ]
 };
 
+const sweptAwayByTornadoPart2: Prompt = {
+    question: "Whoa there, Dorothy! We doing this dance again?",
+    answers: [
+        { text: "Yes!", nextPrompt: gameOverPrompt },
+        { text: "No, I will hide under something sturdy", nextPrompt: protectingYourselfPrompt }
+    ]
+};
+
+const tornadoWatchPromptWrongAnswer: Prompt = {
+    question: "That's not correct. A tornado watch means that conditions are right for a tornado, but one hasn't been spotted yet.",
+    answers: [
+        { text: "Try Again", nextPrompt: welcomeToTwistervillePrompt},
+        { text: "End Game", nextPrompt: gameOverPrompt}
+    ]
+};
+
 // Linking up the sequence of prompts
 welcomeToTwistervillePrompt.answers[0].nextPrompt = earlyWarningPrompt;
 
@@ -146,25 +158,27 @@ earlyWarningPrompt.answers[0].nextPrompt = sweptAwayByTornado;
 earlyWarningPrompt.answers[1].nextPrompt = tornadoWatchPrompt;
 earlyWarningPrompt.answers[2].nextPrompt = feedbackEarlyWarningIgnore;
 
-tornadoWatchPrompt.answers[0].nextPrompt = feedbackPreparingHomeOpenWindows; 
+tornadoWatchPrompt.answers[0].nextPrompt = tornadoWatchPromptWrongAnswer; 
 tornadoWatchPrompt.answers[1].nextPrompt = preparingHomePrompt;
-tornadoWatchPrompt.answers[2].nextPrompt = feedbackPreparingHomeCleaning; 
+tornadoWatchPrompt.answers[2].nextPrompt = tornadoWatchPromptWrongAnswer; 
+
+tornadoWatchPromptWrongAnswer.answers[0].nextPrompt = welcomeToTwistervillePrompt;
+tornadoWatchPromptWrongAnswer.answers[1].nextPrompt = gameOverPrompt;
 
 preparingHomePrompt.answers[0].nextPrompt = feedbackPreparingHomeOpenWindows;
 preparingHomePrompt.answers[1].nextPrompt = takingShelterPrompt;
 preparingHomePrompt.answers[2].nextPrompt = feedbackPreparingHomeCleaning;
 
-protectingYourselfPrompt.answers[0].nextPrompt = sweptAwayByTornado;
+protectingYourselfPrompt.answers[0].nextPrompt = sweptAwayByTornadoPart2;
 protectingYourselfPrompt.answers[1].nextPrompt = postTornadoPrompt;
-protectingYourselfPrompt.answers[2].nextPrompt = sweptAwayByTornado;
+protectingYourselfPrompt.answers[2].nextPrompt = sweptAwayByTornadoPart2;
 
 takingShelterPrompt.answers[0].nextPrompt = protectingYourselfPrompt;
 takingShelterPrompt.answers[1].nextPrompt = feedbackPreparingHomeOpenWindows;
-takingShelterPrompt.answers[2].nextPrompt = sweptAwayByTornado;
+takingShelterPrompt.answers[2].nextPrompt = sweptAwayByTornadoPart2;
 
-postTornadoPrompt.answers[0].nextPrompt = sweptAwayByTornado;
+postTornadoPrompt.answers[0].nextPrompt = gameOverPrompt;
 postTornadoPrompt.answers[1].nextPrompt = helpingNeighborsPrompt;
-postTornadoPrompt.answers[2].nextPrompt = helpingNeighborsPrompt;
 
 helpingNeighborsPrompt.answers[0].nextPrompt = gameOverPrompt;
 helpingNeighborsPrompt.answers[1].nextPrompt = Congrats;
